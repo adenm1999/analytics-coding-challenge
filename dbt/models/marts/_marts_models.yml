@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: dim_publishers
+    description: "Publisher dimension table. One row per publisher."
+    columns:
+      - name: publisher_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: publisher_name
+        tests:
+          - not_null
+
+  - name: dim_campaigns
+    description: "Campaign dimension table. One row per campaign."
+    columns:
+      - name: campaign_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: campaign_status
+        tests:
+          - not_null
+
+  - name: fct_ad_events_daily
+    description: >
+      Daily aggregated ad metrics.
+      Grain: one row per event_date + publisher_id + device_type + country_code.
+      Includes impressions, clicks, viewable_impressions, revenue_usd,
+      fill_rate, ctr, and viewability_rate.
+    columns:
+      - name: event_date
+        description: "Date of the ad events."
+        tests:
+          - not_null
+      - name: publisher_id
+        description: "FK to dim_publishers."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_publishers')
+              field: publisher_id
+      - name: impressions
+        description: "Count of impression events."
+        tests:
+          - not_null
+      - name: revenue_usd
+        description: "Total revenue in USD for this grain."
+        tests:
+          - not_null
+      - name: fill_rate
+        description: "Ratio of filled impressions to total impressions (0.0-1.0)."
+      - name: ctr
+        description: "Click-through rate: clicks / impressions."
+      - name: viewability_rate
+        description: "Viewable impressions / total impressions."
+
+  - name: fct_publisher_performance
+    description: >
+      Publisher-level daily rollup. Grain: one row per event_date + publisher_id.
+      Joins fct_ad_events_daily with dim_publishers for reporting-ready output.
+    columns:
+      - name: event_date
+        tests:
+          - not_null
+      - name: publisher_id
+        tests:
+          - not_null
+      - name: publisher_name
+        tests:
+          - not_null
+      - name: revenue_usd
+        tests:
+          - not_null
