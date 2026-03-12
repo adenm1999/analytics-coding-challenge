@@ -45,8 +45,3 @@ GROUP BY dt ORDER BY dt;
 SELECT count(*), countDistinct(publisher_id) FROM raw.publishers;
 SELECT count(*), countDistinct(campaign_id)  FROM raw.campaigns;
 
--- FINDINGS:
--- - Found X duplicate event_ids
--- - N rows with revenue_usd < 0
--- - Publisher X shows high impressions / zero revenue (suspected bot traffic)
--- - Browser "HeadlessChrome" appears N times with $0 revenue
