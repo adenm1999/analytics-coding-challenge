@@ -5,9 +5,9 @@ sources:
     database: raw
     tables:
       - name: ad_events
-        description: "Raw ad-serving events from the ad platform. ~131k rows over ~30 days."
+        description: "Raw ad-serving events from the ad platform"
       - name: publishers
-        description: "Publisher dimension — 20 publishers."
+        description: "Publisher dimension"
       - name: campaigns
         description: "Advertiser campaign dimension"
       - name: ad_units
