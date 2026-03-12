@@ -1,0 +1,73 @@
+version: 2
+
+models:
+  - name: stg_ad_events
+    description: >
+      Deduplicated and cleaned ad-serving events. One row per event_id.
+      Duplicates removed using row_number() ordered by _loaded_at desc — keeps freshest load.
+      Rows with negative revenue_usd excluded (likely ETL errors).
+    columns:
+      - name: event_id
+        description: "Unique event identifier."
+        tests:
+          - unique
+          - not_null
+      - name: event_type
+        description: "Type of ad event — impression, click, or viewable_impression."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['impression', 'click', 'viewable_impression']
+      - name: publisher_id
+        description: "Foreign key to stg_publishers."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_publishers')
+              field: publisher_id
+      - name: revenue_usd
+        description: "Revenue in USD. Always >= 0 after cleaning."
+        tests:
+          - not_null
+      - name: is_filled
+        description: "True if an ad was served. NULL campaign_id means unfilled — this is valid."
+      - name: event_date
+        description: "Date derived from event_timestamp for daily aggregations."
+        tests:
+          - not_null
+
+  - name: stg_publishers
+    description: "Cleaned publisher dimension. One row per publisher_id."
+    columns:
+      - name: publisher_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: publisher_name
+        tests:
+          - not_null
+
+  - name: stg_campaigns
+    description: "Cleaned campaign dimension. One row per campaign_id."
+    columns:
+      - name: campaign_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_ad_units
+    description: "Cleaned ad unit dimension. One row per ad_unit_id."
+    columns:
+      - name: ad_unit_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: publisher_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_publishers')
+              field: publisher_id
