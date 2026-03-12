@@ -4,7 +4,7 @@ models:
   - name: stg_ad_events
     description: >
       Deduplicated and cleaned ad-serving events. One row per event_id.
-      Duplicates removed using row_number() ordered by _loaded_at desc — keeps freshest load.
+      Duplicates removed using row_number() ordered by _loaded_at desc.
       Rows with negative revenue_usd excluded (likely ETL errors).
     columns:
       - name: event_id
@@ -13,7 +13,7 @@ models:
           - unique
           - not_null
       - name: event_type
-        description: "Type of ad event — impression, click, or viewable_impression."
+        description: "Type of ad event."
         tests:
           - not_null
           - accepted_values:
@@ -30,9 +30,9 @@ models:
         tests:
           - not_null
       - name: is_filled
-        description: "True if an ad was served. NULL campaign_id means unfilled — this is valid."
+        description: "True if an ad was served. NULL campaign_id means unfilled."
       - name: event_date
-        description: "Date derived from event_timestamp for daily aggregations."
+        description: "Date derived from event_timestamp."
         tests:
           - not_null
 

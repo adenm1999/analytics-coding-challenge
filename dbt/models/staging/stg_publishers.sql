@@ -11,9 +11,13 @@ deduplicated as (
 cleaned as (
     select
         publisher_id,
-        trim(publisher_name)  as publisher_name,
-        country_code,
-        publisher_type
+        trim(publisher_name)      as publisher_name,
+        trim(publisher_category)  as publisher_category,
+        trim(primary_domain)      as primary_domain,
+        trim(account_manager)     as account_manager,
+        trim(country)             as country,
+        created_at,
+        updated_at
     from deduplicated
     where rn = 1
 )
