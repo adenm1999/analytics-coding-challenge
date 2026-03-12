@@ -1,6 +1,8 @@
--- Flags filled impressions with a campaign but zero revenue
--- A large failure count = suspected bot / invalid traffic
--- This is an investigative test — document findings in DESIGN.md
+{{ config(severity='warn') }}
+
+-- Investigative test: flags filled impressions with zero revenue
+-- High failure count = suspected bot / invalid traffic
+-- Documented in DESIGN.md as the anomaly investigation finding
 select count(*) as failures
 from {{ ref('stg_ad_events') }}
 where event_type = 'impression'
