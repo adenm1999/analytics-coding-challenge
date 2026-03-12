@@ -29,8 +29,10 @@ models:
     description: >
       Daily aggregated ad metrics.
       Grain: one row per event_date + publisher_id + device_type + country_code.
-      Includes impressions, clicks, viewable_impressions, revenue_usd,
-      fill_rate, ctr, and viewability_rate.
+    meta:
+      joins:
+        - join: dim_publishers
+          sql_on: "${dim_publishers.publisher_id} = ${fct_ad_events_daily.publisher_id}"
     columns:
       - name: event_date
         description: "Date of the ad events."
@@ -47,23 +49,50 @@ models:
         description: "Count of impression events."
         tests:
           - not_null
+        meta:
+          metrics:
+            total_impressions:
+              type: sum
+      - name: clicks
+        description: "Count of click events."
+        meta:
+          metrics:
+            total_clicks:
+              type: sum
       - name: revenue_usd
-        description: "Total revenue in USD for this grain."
+        description: "Total revenue in USD."
         tests:
           - not_null
+        meta:
+          metrics:
+            total_revenue:
+              type: sum
       - name: fill_rate
         description: "Ratio of filled impressions to total impressions (0.0-1.0)."
+        meta:
+          metrics:
+            avg_fill_rate:
+              type: average
       - name: ctr
         description: "Click-through rate: clicks / impressions."
+        meta:
+          metrics:
+            avg_ctr:
+              type: average
       - name: viewability_rate
         description: "Viewable impressions / total impressions."
+        meta:
+          metrics:
+            avg_viewability_rate:
+              type: average
 
   - name: fct_publisher_performance
     description: >
-      Publisher-level daily rollup. Grain: one row per event_date + publisher_id.
-      Joins fct_ad_events_daily with dim_publishers for reporting-ready output.
+      Publisher-level daily rollup.
+      Grain: one row per event_date + publisher_id.
     columns:
       - name: event_date
+        description: "Date of the ad events."
         tests:
           - not_null
       - name: publisher_id
@@ -72,6 +101,35 @@ models:
       - name: publisher_name
         tests:
           - not_null
+      - name: impressions
+        description: "Total impressions."
+        meta:
+          metrics:
+            total_impressions:
+              type: sum
+      - name: clicks
+        description: "Total clicks."
+        meta:
+          metrics:
+            total_clicks:
+              type: sum
       - name: revenue_usd
+        description: "Total revenue in USD."
         tests:
           - not_null
+        meta:
+          metrics:
+            total_revenue:
+              type: sum
+      - name: fill_rate
+        description: "Fill rate (0.0-1.0)."
+        meta:
+          metrics:
+            avg_fill_rate:
+              type: average
+      - name: ctr
+        description: "Click-through rate."
+        meta:
+          metrics:
+            avg_ctr:
+              type: average
